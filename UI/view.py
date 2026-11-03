@@ -3,8 +3,10 @@ from UI.alert import AlertManager
 
 '''
     VIEW:
-    - Rappresenta l'interfaccia utente
-    - Riceve i dati dal MODELLO e li presenta senza modificarli
+- Rappresenta l'interfaccia utente
+
+- Riceve i dati dal MODELLO e li presenta senza modificarli
+
 '''
 
 class View:
@@ -35,6 +37,7 @@ class View:
         self.controller = controller
 
     def update(self):
+        # Ricarica l'interfaccia grafica per rendere visibili a schermo le modifiche apportate ai controlli
         self.page.update()
 
     def load_interface(self):
@@ -49,10 +52,10 @@ class View:
         # TextField per responsabile
         self.input_responsabile = ft.TextField(value=self.controller.get_responsabile(), label="Responsabile")
 
-        # ListView per mostrare la lista di strumenti aggiornata
+        # ListView per mostrare la lista di strumenti aggiornata (expand=True le permette di occupare lo spazio disponibile)
         self.lista_strumenti = ft.ListView(expand=True, spacing=5, padding=10, auto_scroll=True)
 
-        # TextField per ricerca strumento per tipo
+        # TextField per ricerca strumento per tipo (salvato in self. così il Controller può leggerne il .value)
         self.input_tipo_strumento = ft.TextField(label="Tipo")
 
         # ListView per mostrare il risultato della ricerca strumenti per tipo
@@ -63,9 +66,12 @@ class View:
         pulsante_conferma_responsabile = ft.Button("Conferma", on_click=self.controller.conferma_responsabile)
 
         # Altri Pulsanti da implementare (es. "Mostra" e "Cerca")
-        # TODO
+        # Con il parametro on_click collego l'evento del clic del mouse alla relativa funzione (Event Handler) nel Controller
+        pulsante_mostra_strumenti = ft.Button("Mostra", on_click=self.controller.mostra_strumenti)
+        pulsante_cerca_strumento = ft.Button("Cerca", on_click=self.controller.cerca_strumenti)
 
         # --- LAYOUT ---
+        # Aggiungo tutti i controlli alla pagina dall'alto verso il basso usando ft.Row per allinearli in orizzontale
         self.page.add(
             self.toggle_cambia_tema,
 
@@ -81,11 +87,23 @@ class View:
                    alignment=ft.MainAxisAlignment.CENTER),
             ft.Divider(),
 
-            # Sezione 3
-            # TODO
+            # Sezione 3: Visualizzazione di tutti gli strumenti
+            # Uso ft.Row per affiancare l'intestazione "Strumenti" e il pulsante "Mostra", centrandoli nella pagina
+            ft.Row(spacing=200,
+                   controls=[ft.Text("Strumenti", size=20), pulsante_mostra_strumenti],
+                   alignment=ft.MainAxisAlignment.CENTER),
+            # Sotto la riga inserisco il contenitore ListView che verrà popolato dinamicamente dal Controller
+            self.lista_strumenti,
+            ft.Divider(),
 
-            # Sezione 4
-            # TODO
+            # Sezione 4: Ricerca degli strumenti filtrati per tipo
+            ft.Text("Cerca Strumento per Tipo", size=20),
+            # Affianco la casella di testo (input_tipo_strumento) e il pulsante "Cerca" in una riga centrata
+            ft.Row(spacing=200,
+                   controls=[self.input_tipo_strumento, pulsante_cerca_strumento],
+                   alignment=ft.MainAxisAlignment.CENTER),
+            # Sotto la riga inserisco la seconda ListView dedicata ai risultati della ricerca
+            self.lista_strumenti_ricerca
         )
 
     def cambia_tema(self, e):
